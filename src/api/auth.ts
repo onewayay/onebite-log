@@ -3,6 +3,7 @@
 
 import { supabase } from "@/lib/supabase";
 
+// 회원가입 요청 비동기 함수
 export async function signUp({ email, password }: { email: string; password: string }) {
   // 나중에 매개변수 순서가 헷갈릴 수 있기에 객체로 묶었음
 
@@ -19,5 +20,14 @@ export async function signUp({ email, password }: { email: string; password: str
   if (error) throw error;
 
   // 회원가입만 진행하기에 특별히 처리할 내용이 없다. 그래서 결과값 data를 그대로 반환
+  return data;
+}
+
+// 로그인 요청 비동기 함수
+export async function signInWithPassword({ email, password }: { email: string; password: string }) {
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) throw error;
+
   return data;
 }
