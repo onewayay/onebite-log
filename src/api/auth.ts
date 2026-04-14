@@ -2,6 +2,7 @@
 // 인증과 관련된 모든 비동기 함수 보관 영역
 
 import { supabase } from "@/lib/supabase";
+import type { Provider } from "@supabase/supabase-js";
 
 // 회원가입 요청 비동기 함수
 export async function signUp({ email, password }: { email: string; password: string }) {
@@ -26,6 +27,17 @@ export async function signUp({ email, password }: { email: string; password: str
 // 로그인 요청 비동기 함수
 export async function signInWithPassword({ email, password }: { email: string; password: string }) {
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) throw error;
+
+  return data;
+}
+
+// supabase 서버에게 소셜 로그인을 요청하는 비동기 함수
+export async function signInWithOAuth(provider: Provider) {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider, // 인증을 제공할 외부 서비스의 이름을 인수로 받음. 타입은 supabase에서 제공하는 타입을 넣는다면 소셜 로그인 이름이 유니온으로 제공되어 있어서 좋음.
+  });
 
   if (error) throw error;
 
