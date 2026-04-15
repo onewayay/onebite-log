@@ -7,12 +7,23 @@ import { useState } from "react";
 import { Link } from "react-router";
 import gitHubLogo from "@/assets/github-mark.svg";
 import { useSignInWithOAuth } from "@/hooks/mutations/use-sign-in-with-oauth";
+import { toast } from "sonner";
 
 export default function SignInPage() {
   const [email, setEmail] = useState(""); // 이메일 상태
   const [password, setPassword] = useState(""); // 비밀번호 상태
 
-  const { mutate: signInWithPassword } = useSignInWithPassword(); // 로그인 비동기 요청 관리하는 뮤테이션. 헷갈리지 않도록 signInWithPassword로 이름 설정
+  // 로그인 비동기 요청 관리하는 뮤테이션. 헷갈리지 않도록 signInWithPassword로 이름 설정
+  const { mutate: signInWithPassword } = useSignInWithPassword({
+    onError: (error) => {
+      // 로그인이 실패했을 경우 toast 메세지로 에러 메세지 보여줌
+      toast.error(error.message, {
+        position: "top-center",
+      });
+
+      setPassword("");
+    },
+  });
   const { mutate: signInWithOAuth } = useSignInWithOAuth(); // 소셜 로그인 비동기 요청 관리하는 뮤테이션. 헷갈리지 않도록 signInWithOAuth로 이름 설정
 
   // 로그인 버튼 클릭 이벤트 핸들러
