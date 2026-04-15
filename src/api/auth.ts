@@ -26,7 +26,10 @@ export async function signUp({ email, password }: { email: string; password: str
 
 // 로그인 요청 비동기 함수
 export async function signInWithPassword({ email, password }: { email: string; password: string }) {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
 
   if (error) throw error;
 
