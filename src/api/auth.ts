@@ -46,3 +46,26 @@ export async function signInWithOAuth(provider: Provider) {
 
   return data;
 }
+
+// 비밀번호 재설정을 위한 인증 메일 요청하는 비동기 함수
+export async function requestPasswordResetEmail(email: string) {
+  const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    // 인증 완료시 리다이렉트 시킬 주소
+    redirectTo: `${import.meta.env.VITE_PUBLIC_URL}/reset-password`,
+  });
+
+  if (error) throw error;
+
+  return data;
+}
+
+// 비밀번호 변경 요청하는 비동기 함수
+export async function updatePassword(password: string) {
+  const { data, error } = await supabase.auth.updateUser({
+    password,
+  });
+
+  if (error) throw error;
+
+  return data;
+}
