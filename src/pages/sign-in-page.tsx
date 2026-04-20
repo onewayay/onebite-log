@@ -2,11 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useSignInWithPassword } from "@/hooks/mutations/use-sign-in-with-password";
+import { useSignInWithPassword } from "@/hooks/mutations/auth/use-sign-in-with-password";
 import { useState } from "react";
 import { Link } from "react-router";
 import gitHubLogo from "@/assets/github-mark.svg";
-import { useSignInWithOAuth } from "@/hooks/mutations/use-sign-in-with-oauth";
+import { useSignInWithOAuth } from "@/hooks/mutations/auth/use-sign-in-with-oauth";
 import { toast } from "sonner";
 import { generateErrorMessage } from "@/lib/error";
 
@@ -27,6 +27,8 @@ export default function SignInPage() {
       setPassword("");
     },
   });
+
+  // 소셜 로그인 비동기 요청 관리하는 뮤테이션. 헷갈리지 않도록 signInWithOAuth로 이름 설정
   const { mutate: signInWithOAuth, isPending: isSignInWithOAuthPending } = useSignInWithOAuth({
     onError: (error) => {
       const message = generateErrorMessage(error); // 한글화 에러 메세지 생성하는 함수로 error를 한글화
@@ -36,7 +38,7 @@ export default function SignInPage() {
         position: "top-center",
       });
     },
-  }); // 소셜 로그인 비동기 요청 관리하는 뮤테이션. 헷갈리지 않도록 signInWithOAuth로 이름 설정
+  });
 
   // 로그인 버튼 클릭 이벤트 핸들러
   const handleSignInWithPasswordCLick = () => {
