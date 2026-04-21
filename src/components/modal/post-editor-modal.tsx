@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useCreatePost } from "@/hooks/mutations/post/use-create-post";
+import { useOpenAlertModal } from "@/store/alert-modal";
 import { usePostEditorModal } from "@/store/post-editor-modal";
 import { useSession } from "@/store/session";
 import { ImageIcon, XIcon } from "lucide-react";
@@ -18,6 +19,8 @@ type Image = {
 
 export default function PostEditorModal() {
   const session = useSession();
+
+  const openAlertModal = useOpenAlertModal(); // Alert Modal 열림 전역 상태
 
   const { isOpen, close } = usePostEditorModal(); // 모달 열림상태, 닫는기능 전역 관리
 
@@ -41,6 +44,19 @@ export default function PostEditorModal() {
 
   // 모달 외부를 누르거나 x 버튼을 눌렀을 때 호출되는 이벤트 핸들러. 모달 닫는 기능
   const handleCloseModal = () => {
+    if (content !== "" || images.length !== 0) {
+      // 글 작성중인 경우(컨텐츠가 작성중이거나 이미지가 추가된 경우)
+      // Alert Modal 열림
+      openAlertModal({
+        title: "게시글 작성이 마무리 되지 않았습니다.",
+        description: "이 화면에서 나가면 작성중이던 내용이 사라집니다.",
+        onPositive: () => {
+          close();
+        },
+      });
+
+      return;
+    }
     close();
   };
 
