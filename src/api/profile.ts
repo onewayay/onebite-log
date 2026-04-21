@@ -1,5 +1,5 @@
 // src > api > profile.ts
-// 프로필과 관련되 모든 비동기 요청을 관리하는 영역
+// 프로필과 관련된 모든 비동기 요청을 관리하는 영역
 
 import { supabase } from "@/lib/supabase";
 import { getRandomNickname } from "@/lib/utils";

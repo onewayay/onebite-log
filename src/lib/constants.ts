@@ -9,3 +9,6 @@ export const QUERY_KEYS = {
     byId: (userId: string) => ["profile", "byId", userId],
   },
 };
+
+// 이미지 보관하는 스토리지 버킷 이름
+export const BUCKET_NAME = "uploads";

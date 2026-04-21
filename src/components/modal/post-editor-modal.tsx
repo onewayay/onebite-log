@@ -5,6 +5,7 @@ import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carouse
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useCreatePost } from "@/hooks/mutations/post/use-create-post";
 import { usePostEditorModal } from "@/store/post-editor-modal";
+import { useSession } from "@/store/session";
 import { ImageIcon, XIcon } from "lucide-react";
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { toast } from "sonner";
@@ -16,6 +17,8 @@ type Image = {
 };
 
 export default function PostEditorModal() {
+  const session = useSession();
+
   const { isOpen, close } = usePostEditorModal(); // 모달 열림상태, 닫는기능 전역 관리
 
   // 포스트 생성 비동기 요청 관리하는 뮤테이션. 헷갈리지 않도록 createPost로 이름 설정
@@ -46,7 +49,7 @@ export default function PostEditorModal() {
     if (content.trim() === "") return;
 
     // 포스트 생성 요청
-    createPost(content);
+    createPost({ content, images: images.map((image) => image.file), userId: session!.user.id });
   };
 
   // 이미지 파일들이 선택되었을 때 실행할 이벤트 핸들러
