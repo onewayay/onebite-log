@@ -42,6 +42,27 @@ export default function PostEditorModal() {
   const textareaRef = useRef<HTMLTextAreaElement>(null); // textarea DOM 요소를 참조할 레퍼런스 객체
   const fileInputRef = useRef<HTMLInputElement>(null); // input DOM 요소를 참조할 레퍼런스 객체
 
+  // textarea 내용에 따라 textarea 높이 조절
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto"; // 일단 높이값 한번 초기화
+      textareaRef.current.style.height = textareaRef.current.scrollHeight + "px"; // 현재 높이로 변경
+    }
+  }, [content]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      // 모달이 닫힐 때 브라우저 메모리에 남아있는 이미지 파일 삭제
+      images.forEach((image) => {
+        URL.revokeObjectURL(image.previewUrl);
+      });
+      return;
+    }
+    textareaRef.current?.focus(); // 모달이 열릴 때 textarea에 포커스 되도록 설정
+    setContent(""); // 모달이 열릴 때 textarea 내용 초기화
+    setImages([]); // 이미지 상태 초기화
+  }, [isOpen]);
+
   // 모달 외부를 누르거나 x 버튼을 눌렀을 때 호출되는 이벤트 핸들러. 모달 닫는 기능
   const handleCloseModal = () => {
     if (content !== "" || images.length !== 0) {
@@ -87,23 +108,10 @@ export default function PostEditorModal() {
 
   // 이미지 삭제 버튼 클릭 이벤트 핸들러
   const handleDeleteImage = (image: Image) => {
-    setImages((prevImages) => prevImages.filter((item) => item.previewUrl !== image.previewUrl));
+    setImages((prevImages) => prevImages.filter((item) => item.previewUrl !== image.previewUrl)); // images 상태에서 인수로 전달된 image 제거
+
+    URL.revokeObjectURL(image.previewUrl); // 브라우저 메모리에 남아있는 해당 image 제거
   };
-
-  // textarea 내용에 따라 textarea 높이 조절
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto"; // 일단 높이값 한번 초기화
-      textareaRef.current.style.height = textareaRef.current.scrollHeight + "px"; // 현재 높이로 변경
-    }
-  }, [content]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    textareaRef.current?.focus(); // 모달이 열릴 때 textarea에 포커스 되도록 설정
-    setContent(""); // 모달이 열릴 때 textarea 내용 초기화
-    setImages([]); // 이미지 상태 초기화
-  }, [isOpen]);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleCloseModal}>
