@@ -8,6 +8,11 @@ export const QUERY_KEYS = {
     list: ["profile", "all"],
     byId: (userId: string) => ["profile", "byId", userId],
   },
+  post: {
+    all: ["post"],
+    list: ["post", "list"],
+    byId: (postId: number) => ["post", "byId", postId],
+  },
 };
 
 // 이미지 보관하는 스토리지 버킷 이름

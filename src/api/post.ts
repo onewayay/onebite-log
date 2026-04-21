@@ -5,6 +5,15 @@ import { uploadImage } from "@/api/image";
 import { supabase } from "@/lib/supabase";
 import type { PostEntity } from "@/types";
 
+// 모든 포스트 조회 요청 비동기 함수
+export async function fetchPosts() {
+  const { data, error } = await supabase.from("post").select("*, author: profile!author_id (*)").order("created_at", { ascending: false });
+
+  if (error) throw error;
+
+  return data;
+}
+
 // 새로운 포스트 생성 비동기 함수
 export async function createPost(content: string) {
   const { data, error } = await supabase
