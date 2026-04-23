@@ -6,8 +6,12 @@ import { supabase } from "@/lib/supabase";
 import type { PostEntity } from "@/types";
 
 // 모든 포스트 조회 요청 비동기 함수
-export async function fetchPosts() {
-  const { data, error } = await supabase.from("post").select("*, author: profile!author_id (*)").order("created_at", { ascending: false });
+export async function fetchPosts({ from, to }: { from: number; to: number }) {
+  const { data, error } = await supabase
+    .from("post")
+    .select("*, author: profile!author_id (*)")
+    .order("created_at", { ascending: false })
+    .range(from, to);
 
   if (error) throw error;
 
