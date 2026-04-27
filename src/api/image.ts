@@ -17,3 +17,16 @@ export async function uploadImage({ file, filePath }: { file: File; filePath: st
 
   return publicUrl;
 }
+
+// 특정 경로 밑에 있는 이미지를 삭제하는 함수
+// user_id > post_id 경로 하위의 이미지를 모두 삭제
+export async function deleteImagesInPath(path: string) {
+  // 일단 매개변수로 받은 경로 아래의 모든 파일들을 다 불러옴. -> 그래야 어떤 파일들을 삭제할 건지 목록을 구할 수 있음.
+  const { data: files, error: fetchFilesError } = await supabase.storage.from(BUCKET_NAME).list(path);
+
+  if (fetchFilesError) throw fetchFilesError;
+
+  const { error: removeError } = await supabase.storage.from(BUCKET_NAME).remove(files.map((file) => `${path}/${file.name}`));
+
+  if (removeError) throw removeError;
+}
