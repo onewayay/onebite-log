@@ -32,5 +32,8 @@ export function useInfinitePostsData() {
       if (lastPage.length < PAGE_SIZE) return undefined;
       return allPage.length;
     },
+
+    // 무한 스크롤로 불러온 데이터는 자동으로 리패칭이 이루어지지 않도록
+    staleTime: Infinity,
   });
 }
