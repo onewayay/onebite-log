@@ -18,6 +18,15 @@ export async function fetchPosts({ from, to }: { from: number; to: number }) {
   return data;
 }
 
+// 하나의 포스트 아이템 조회 요청 비동기 함수
+export async function fetchPostById(postId: number) {
+  const { data, error } = await supabase.from("post").select("*, author: profile!author_id (*)").eq("id", postId).single();
+
+  if (error) throw error;
+
+  return data;
+}
+
 // 새로운 포스트 생성 비동기 함수
 export async function createPost(content: string) {
   const { data, error } = await supabase

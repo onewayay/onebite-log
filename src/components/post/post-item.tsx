@@ -9,10 +9,19 @@ import { formatTimeAgo } from "@/lib/time";
 import DeletePostButton from "@/components/post/delete-post-button";
 import EditPostButton from "@/components/post/edit-post-button";
 import { useSession } from "@/store/session";
+import { usePostByIdData } from "@/hooks/queries/use-post-by-id-data";
+import Loader from "@/components/loader";
+import Fallback from "@/components/fallback";
 
-export default function PostItem(post: Post) {
+export default function PostItem({ postId }: { postId: number }) {
   const session = useSession();
   const userId = session?.user.id;
+
+  // 하나의 포스트 조회 비동기 요청 관리하는 쿼리. 헷갈리지 않도록 post로 이름 설정
+  const { data: post, isPending: isPending, error: error } = usePostByIdData({ postId, type: "FEED" });
+
+  if (isPending) return <Loader />;
+  if (error) return <Fallback />;
 
   const isMine = userId === post.author_id; // 이 포스트가 내가 쓴 포스트인지 비교
 

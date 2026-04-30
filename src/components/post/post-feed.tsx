@@ -12,6 +12,7 @@ export default function PostFeed() {
   // fetchNextPage -> 다음 페이지를 불러오도로 queryFn을 다시 호출하는 역할
   // isFetchingNextPage -> 다음 페이지를 불러오는 중이라면 true 아니라면 false. 무한스크롤로 추가 데이터 불러오는 로딩상태를 나타냄
   const { data, error, isPending, fetchNextPage, isFetchingNextPage } = useInfinitePostsData();
+  // 위 data는 쿼리 반환값에 의해 모든 포스트의 id 값들만 가지고 있다.
 
   // ref -> 관측할 대상 , inView -> 화면에 보이는지 여부 상태
   const { ref, inView } = useInView();
@@ -29,7 +30,7 @@ export default function PostFeed() {
 
   return (
     <div className="flex flex-col gap-10">
-      {data.pages.map((page) => page.map((post) => <PostItem key={post.id} {...post} />))}
+      {data.pages.map((page) => page.map((postId) => <PostItem key={postId} postId={postId} />))}
       {isFetchingNextPage && <Loader />}
       <div ref={ref}></div>
     </div>
