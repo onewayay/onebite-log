@@ -8,8 +8,14 @@ import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carouse
 import { formatTimeAgo } from "@/lib/time";
 import DeletePostButton from "@/components/post/delete-post-button";
 import EditPostButton from "@/components/post/edit-post-button";
+import { useSession } from "@/store/session";
 
 export default function PostItem(post: Post) {
+  const session = useSession();
+  const userId = session?.user.id;
+
+  const isMine = userId === post.author_id; // 이 포스트가 내가 쓴 포스트인지 비교
+
   return (
     <div className="flex flex-col gap-4 border-b pb-8">
       {/* 1. 유저 정보, 수정/삭제 버튼 */}
@@ -28,10 +34,13 @@ export default function PostItem(post: Post) {
         </div>
 
         {/* 1-2. 수정/삭제 버튼 */}
-        <div className="text-muted-foreground flex text-sm">
-          <EditPostButton {...post} />
-          <DeletePostButton id={post.id} />
-        </div>
+        {/* 내가 쓴 포스트에만 보이도록 함*/}
+        {isMine && (
+          <div className="text-muted-foreground flex text-sm">
+            <EditPostButton {...post} />
+            <DeletePostButton id={post.id} />
+          </div>
+        )}
       </div>
 
       {/* 2. 컨텐츠, 이미지 캐러셀 */}
