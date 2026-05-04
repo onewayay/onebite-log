@@ -3,12 +3,19 @@
 
 import { fetchPostById } from "@/api/post";
 import { QUERY_KEYS } from "@/lib/constants";
+import { useSession } from "@/store/session";
 import { useQuery } from "@tanstack/react-query";
 
 export function usePostByIdData({ postId, type }: { postId: number; type: "FEED" | "DETAIL" }) {
+  const session = useSession();
+
   return useQuery({
     queryKey: QUERY_KEYS.post.byId(postId),
-    queryFn: () => fetchPostById(postId),
+    queryFn: () =>
+      fetchPostById({
+        postId,
+        userId: session!.user.id,
+      }),
 
     // type이 FEED일 때는 queryFn 실행 없이 캐싱된 데이터 사용, DETAIL일 경우 queryFn 실행해서 서버로 부터 데이터 불러오도록
     enabled: type === "FEED" ? false : true,

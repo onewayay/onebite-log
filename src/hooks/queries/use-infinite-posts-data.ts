@@ -3,12 +3,14 @@
 
 import { fetchPosts } from "@/api/post";
 import { QUERY_KEYS } from "@/lib/constants";
+import { useSession } from "@/store/session";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 
 const PAGE_SIZE = 5;
 
 export function useInfinitePostsData() {
   const queryClient = useQueryClient();
+  const session = useSession();
 
   return useInfiniteQuery({
     queryKey: QUERY_KEYS.post.list,
@@ -16,7 +18,7 @@ export function useInfinitePostsData() {
       const from = pageParam * PAGE_SIZE; // 불러오기 시작할 데이터 순서
       const to = from + PAGE_SIZE - 1; // 마지막으로 불러올 데이터 순서
 
-      const posts = await fetchPosts({ from, to });
+      const posts = await fetchPosts({ from, to, userId: session!.user.id });
 
       // 쿼리 클라이언트에 각가 개별 키를 가진 데이터로 캐싱
       posts.forEach((post) => {
