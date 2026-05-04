@@ -99,3 +99,15 @@ export async function deletePost(id: number) {
 
   return data;
 }
+
+// 사용자가 좋아요 버튼을 눌렀을 때 toggle_post_like 함수를 원격으로 RPC를 통해 호출하는 비동기 함수
+export async function togglePostLike({ postId, userId }: { postId: number; userId: string }) {
+  const { data, error } = await supabase.rpc("toggle_post_like", {
+    p_post_id: postId,
+    p_user_id: userId,
+  });
+
+  if (error) throw error;
+
+  return data;
+}
