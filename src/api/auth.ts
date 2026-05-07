@@ -4,6 +4,17 @@
 import { supabase } from "@/lib/supabase";
 import type { Provider } from "@supabase/supabase-js";
 
+// 사용자 로그아웃 요청 비동기 함수
+export async function signOut() {
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    await supabase.auth.signOut({
+      scope: "local",
+    });
+  }
+}
+
 // 회원가입 요청 비동기 함수
 export async function signUp({ email, password }: { email: string; password: string }) {
   // 나중에 매개변수 순서가 헷갈릴 수 있기에 객체로 묶었음
