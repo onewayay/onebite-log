@@ -24,6 +24,11 @@ export async function deleteImagesInPath(path: string) {
   // 일단 매개변수로 받은 경로 아래의 모든 파일들을 다 불러옴. -> 그래야 어떤 파일들을 삭제할 건지 목록을 구할 수 있음.
   const { data: files, error: fetchFilesError } = await supabase.storage.from(BUCKET_NAME).list(path);
 
+  // 기본 아바타 이미지(프로필 이미지)가 등록 된것이 없다면 삭제 요청 없이 그냥 return
+  if (!files || files.length === 0) {
+    return;
+  }
+
   if (fetchFilesError) throw fetchFilesError;
 
   const { error: removeError } = await supabase.storage.from(BUCKET_NAME).remove(files.map((file) => `${path}/${file.name}`));
