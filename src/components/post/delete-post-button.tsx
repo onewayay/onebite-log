@@ -3,16 +3,23 @@
 import { Button } from "@/components/ui/button";
 import { useDeletePost } from "@/hooks/mutations/post/use-delete-post";
 import { useOpenAlertModal } from "@/store/alert-modal";
-import type { PostEntity } from "@/types";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
 export default function DeletePostButton({ id }: { id: number }) {
   // alert modal 여는 전역 함수
   const openAlertModal = useOpenAlertModal();
+  const navigate = useNavigate();
 
   // 포스트 생성 비동기 요청 관리하는 뮤테이션. 헷갈리지 않도록 deletePost로 이름 설정
   const { mutate: deletePost, isPending: isDeletePostPending } = useDeletePost({
-    // 성공시 딱히 해줄게 없음. onSuccess 생략
+    onSuccess() {
+      const pathname = window.location.pathname;
+      if (pathname.startsWith(`/post/${id}`)) {
+        // DETAIL 페이지에 있을 경우
+        navigate("/", { replace: true });
+      }
+    },
     onError: (error) => {
       toast.error("포스트 삭제에 실패했습니다.", {
         position: "top-center",
