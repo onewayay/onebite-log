@@ -18,3 +18,17 @@ export async function createComment({ postId, content }: { postId: number; conte
 
   return data;
 }
+
+// 특정 포스트의 모든 댓글 조회 요청 비동기 함수
+
+export async function fetchComments(postId: number) {
+  const { data, error } = await supabase
+    .from("comment")
+    .select("*, author: profile!author_id (*)")
+    .eq("post_id", postId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+
+  return data;
+}

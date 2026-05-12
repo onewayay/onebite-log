@@ -14,6 +14,10 @@ export const QUERY_KEYS = {
     userList: (userId: string) => ["post", "byId", userId],
     byId: (postId: number) => ["post", "byId", postId],
   },
+  comment: {
+    all: ["comment"],
+    post: (postId: number) => ["comment", "byId", postId],
+  },
 };
 
 // 이미지 보관하는 스토리지 버킷 이름
