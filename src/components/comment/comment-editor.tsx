@@ -11,6 +11,7 @@ type CreateMode = {
   type: "CREATE";
   postId: number;
 };
+
 type EditMode = {
   type: "EDIT";
   commentId: number;
@@ -18,13 +19,21 @@ type EditMode = {
   onClose: () => void;
 };
 
-type Props = CreateMode | EditMode;
+type ReplyMode = {
+  type: "REPLY";
+  postId: number;
+  parentCommentId: number;
+  onClose: () => void;
+};
+
+type Props = CreateMode | EditMode | ReplyMode;
 
 export default function CommentEditor(props: Props) {
   // 댓글 생성 비동기 요청 관리하는 뮤테이션. 헷갈리지 않도록 createComment로 이름 설정
   const { mutate: createComment, isPending: isCreateCommentPending } = useCreateComment({
     onSuccess() {
       setContent(""); // 댓글 입력값 초기화
+      if (props.type === "REPLY") props.onClose();
     },
     onError(error) {
       toast.error("댓글 추가에 실패했습니다.", {
@@ -63,8 +72,12 @@ export default function CommentEditor(props: Props) {
     if (props.type === "CREATE") {
       // 댓글 추가 비동기 요청
       createComment({ postId: props.postId, content });
+    } else if (props.type === "REPLY") {
+      // REPLY 모드 일 경우 댓댓글 생성 비동기 요청
+      createComment({ postId: props.postId, content, parentCommentId: props.parentCommentId });
     } else {
       // EDITMODE 모드 일 경우 댓글 수정 비동기 요청
+
       // 댓글 수정 비동기 요청
       updateComment({ id: props.commentId, content });
     }
@@ -76,11 +89,12 @@ export default function CommentEditor(props: Props) {
     <div className="flex flex-col gap-2">
       <Textarea value={content} onChange={(e) => setContent(e.target.value)} disabled={isPending} />
       <div className="flex justify-end gap-2">
-        {props.type === "EDIT" && (
-          <Button variant={"outline"} onClick={() => props.onClose()} disabled={isPending}>
-            취소
-          </Button>
-        )}
+        {props.type === "EDIT" ||
+          (props.type === "REPLY" && (
+            <Button variant={"outline"} onClick={() => props.onClose()} disabled={isPending}>
+              취소
+            </Button>
+          ))}
         <Button onClick={handleSubmitClick} disabled={isPending}>
           작성
         </Button>

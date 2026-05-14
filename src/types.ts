@@ -8,6 +8,10 @@ export type CommentEntity = Database["public"]["Tables"]["comment"]["Row"];
 
 export type Post = PostEntity & { author: ProfileEntity; isLiked: boolean };
 export type Comment = CommentEntity & { author: ProfileEntity };
+export type NestedComment = Comment & {
+  parentComment?: Comment;
+  children: NestedComment[]; // 재귀적 타입으로 정의
+};
 
 // mutation의 callbacks 타입
 export type UseMutationCallback = {
