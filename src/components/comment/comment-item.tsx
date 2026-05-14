@@ -7,10 +7,23 @@ import { formatTimeAgo } from "@/lib/time";
 import { useSession } from "@/store/session";
 import { useState } from "react";
 import CommentEditor from "@/components/comment/comment-editor";
+import { useDeleteComment } from "@/hooks/mutations/comment/use-delete-comment";
+import { toast } from "sonner";
+import { useOpenAlertModal } from "@/store/alert-modal";
 
 export default function CommentItem(props: Comment) {
   const session = useSession();
-  const isMine = props.author_id === session?.user.id; // 현재 댓글의 작성자가 나 자신인지 여부
+
+  const openAlertModal = useOpenAlertModal();
+
+  // 댓글 삭제 비동기 요청 관리하는 뮤테이션. 헷갈리지 않도록 deleteComment로 이름 설정
+  const { mutate: deleteComment, isPending: isDeleteCommentPending } = useDeleteComment({
+    onError(error) {
+      toast.error("댓글 삭제에 실패했습니다.", {
+        position: "top-center",
+      });
+    },
+  });
 
   const [isEditing, setisEditing] = useState(false); // 현재 수정 상태인지 상태 관리
 
@@ -18,6 +31,20 @@ export default function CommentItem(props: Comment) {
   const toggleIsEdition = () => {
     setisEditing(!isEditing);
   };
+
+  // 삭제 버튼 클릭 이벤트 핸들러
+  const handleDeleteClick = () => {
+    openAlertModal({
+      title: "댓글 삭제",
+      description: "삭제된 댓글은 되돌릴 수 없습니다. 정말 삭제하시겠습니까?",
+      onPositive: () => {
+        // 댓글 삭제 비동기 요청
+        deleteComment(props.id);
+      },
+    });
+  };
+
+  const isMine = props.author_id === session?.user.id; // 현재 댓글의 작성자가 나 자신인지 여부
 
   return (
     <div className={"flex flex-col gap-8 border-b pb-5"}>
@@ -48,7 +75,9 @@ export default function CommentItem(props: Comment) {
                     수정
                   </div>
                   <div className="bg-border h-[13px] w-[2px]"></div>
-                  <div className="cursor-pointer hover:underline">삭제</div>
+                  <div className="cursor-pointer hover:underline" onClick={handleDeleteClick}>
+                    삭제
+                  </div>
                 </>
               )}
             </div>
