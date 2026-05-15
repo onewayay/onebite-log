@@ -10,13 +10,18 @@ function toNestedComments(comments: Comment[]): NestedComment[] {
   const result: NestedComment[] = [];
 
   comments.forEach((comment) => {
-    if (!comment.parent_comment_id) {
+    if (!comment.root_comment_id) {
       // 부모 댓글이 없다. = 대댓글이 아니다.
       return result.push({ ...comment, children: [] });
     } else {
       // 부모 댓글이 존재. = 대댓글이다.
-      const parentCommentIndex = result.findIndex((item) => item.id === comment.parent_comment_id);
-      result[parentCommentIndex].children.push({ ...comment, children: [], parentComment: result[parentCommentIndex] });
+      const rootCommentIndex = result.findIndex((item) => item.id === comment.root_comment_id);
+      const parentComment = comments.find((item) => item.id === comment.parent_comment_id);
+
+      if (rootCommentIndex === -1) return;
+      if (!parentComment) return;
+
+      result[rootCommentIndex].children.push({ ...comment, children: [], parentComment });
     }
   });
   return result;

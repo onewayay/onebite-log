@@ -53,6 +53,7 @@ export default function CommentItem(props: NestedComment) {
 
   const isMine = props.author_id === session?.user.id; // 현재 댓글의 작성자가 나 자신인지 여부
   const isRooteComment = props.parentComment === undefined; // 현재 댓글이 일반 댓글인지(true) 대댓글인지(false) 여부 확인
+  const isOverTwoLevels = props.parent_comment_id !== props.root_comment_id; // 현재 댓글이 2단계 이상인지 (대대댓글 이상) 여부 확인
 
   return (
     <div className={`flex flex-col gap-8 pb-5 ${isRooteComment ? "border-b" : "ml-6"}`}>
@@ -67,7 +68,10 @@ export default function CommentItem(props: NestedComment) {
           {isEditing ? (
             <CommentEditor type={"EDIT"} commentId={props.id} initialContent={props.content} onClose={toggleIsEdition} />
           ) : (
-            <div>{props.content}</div>
+            <div>
+              {isOverTwoLevels && <span className="font-bold text-blue-500">@{props.parentComment?.author.nickname}&nbsp;</span>}
+              {props.content}
+            </div>
           )}
 
           <div className="text-muted-foreground flex justify-between text-sm">
@@ -94,7 +98,15 @@ export default function CommentItem(props: NestedComment) {
           </div>
         </div>
       </div>
-      {isReply && <CommentEditor type={"REPLY"} postId={props.post_id} parentCommentId={props.id} onClose={toggleIsReply} />}
+      {isReply && (
+        <CommentEditor
+          type={"REPLY"}
+          postId={props.post_id}
+          parentCommentId={props.id}
+          rootCommentId={props.root_comment_id || props.id}
+          onClose={toggleIsReply}
+        />
+      )}
       {props.children.map((comment) => (
         <CommentItem key={comment.id} {...comment} />
       ))}

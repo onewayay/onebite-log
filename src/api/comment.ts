@@ -4,13 +4,24 @@
 import { supabase } from "@/lib/supabase";
 
 // 새로운 댓글 추가 요청 비동기 함수
-export async function createComment({ postId, content, parentCommentId }: { postId: number; content: string; parentCommentId?: number }) {
+export async function createComment({
+  postId,
+  content,
+  parentCommentId,
+  rootCommentId,
+}: {
+  postId: number;
+  content: string;
+  parentCommentId?: number;
+  rootCommentId?: number;
+}) {
   const { data, error } = await supabase
     .from("comment")
     .insert({
       post_id: postId,
       content: content,
       parent_comment_id: parentCommentId,
+      root_comment_id: rootCommentId,
     })
     .select()
     .single();

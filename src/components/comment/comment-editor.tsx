@@ -23,6 +23,7 @@ type ReplyMode = {
   type: "REPLY";
   postId: number;
   parentCommentId: number;
+  rootCommentId: number;
   onClose: () => void;
 };
 
@@ -74,7 +75,7 @@ export default function CommentEditor(props: Props) {
       createComment({ postId: props.postId, content });
     } else if (props.type === "REPLY") {
       // REPLY 모드 일 경우 댓댓글 생성 비동기 요청
-      createComment({ postId: props.postId, content, parentCommentId: props.parentCommentId });
+      createComment({ postId: props.postId, content, parentCommentId: props.parentCommentId, rootCommentId: props.rootCommentId });
     } else {
       // EDITMODE 모드 일 경우 댓글 수정 비동기 요청
 
